@@ -128,3 +128,12 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# pm2 config 
+*.pm2.js
+./*.pm2.js
+
+ecosystem.config.js
+./ecosystem.config.js
+# 
+*.json
