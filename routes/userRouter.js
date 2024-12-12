@@ -23,10 +23,10 @@ router.get('/test', async (req, res) => {
   try {
     await db.User.create({
       email: "test@email.com",
-      nick: "test",
+      name: "test",
       status: "ACTIVE"
     })
-    const data =  db.User.findAll()
+    const data = await db.User.findAll()
     console.log(data)
     OK(res, 'user test API 동작 중!', data)
   } catch (error) {
