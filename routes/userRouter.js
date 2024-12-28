@@ -3,6 +3,7 @@ const { OK, BAD_REQUEST, UNAUTHORIZED, FORBIDDEN, NOT_FOUND, INTERNAL_SERVER_ERR
 const router = express.Router()
 const db = require('../models/index')
 const bcrypt =require("bcrypt")
+const axios = require('axios')
 
 const hashingPW = async password => {
   const saltRounds = 10
@@ -58,13 +59,37 @@ router.post('/join', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const data = req.body
-    const userInfo = await db.User.find({userId: data.id, password: data.pass})
+    console.log(data)
+    const userInfo = await db.User.find({userId: data.userID, userPw: data.userPW})
     console.log(userInfo)
     // const resultPW = await bcrypt.compare(password, hashedPw)
   } catch (error) {
     console.error(`* <Router Error: ${req.path}>: ${error}`)
     BAD_REQUEST(res)
   }
+})
+
+
+
+router.post('/logout', async (req, res) => {
+})
+
+
+router.post('/kakaologin', async (req, res) => {
+  console.log("kakaologin")
+  axios.get("https://kauth.kakao.com/oauth/authorize", // 요청 주소 front -> kakkao -> 사용자 허락 -> kakao ok -> http://localhost:3000/api/user/kakaologinTest
+    {
+      client_id: "e51821c7813998b8f30d574a5607dbd1",
+      redirect_uri: "http://localhost:3000/api/user/kakaologinTest",
+      response_type: "code"
+    }).then(() => {
+      OK(res, "null")
+    })
+})
+
+
+router.get('/kakaoLoginTest', async (req, res) => {
+  console.log(req)
 })
 
 module.exports = router
