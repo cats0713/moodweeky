@@ -1,26 +1,34 @@
 /*
-  const { USER, HTTP } = require('./config/constants');
+  const { USER, HTTP } = require("../config/constants")
   위와 같이 선언하여 사용하면 됨
 */
+const PROVIDER = {
+  STATUS: {
+    LOCAL: "local",
+    KAKAO: "kakao",
+    GOOGLE: "google",
+  }
+}
+
 
 const USER = {
   STATUS: {
-    ACTIVE: 'ACTIVE',           // 활동 중
-    DORMANT: 'DORMANT',         // 휴면 상태
-    SUSPENDED: 'SUSPENDED',     // 정지 상태
-    DELETED: 'DELETED',         // 탈퇴 상태
-    BANNED: 'BANNED',           // 블랙리스트, 밴
-    // PENDING_VERIFICATION: 'PENDING_VERIFICATION', // 미인증 상태
+    ACTIVE: "active",           // 활동 중
+    DORMANT: "dormant",         // 휴면 상태
+    SUSPENDED: "suspended",     // 정지 상태
+    DELETED: "deleted",         // 탈퇴 상태
+    BANNED: "banned",           // 블랙리스트, 밴
+    // PENDING_VERIFICATION: "PENDING_VERIFICATION", // 미인증 상태
   }
 }
 
 const HTTP = {
   STATUS: {
-    SUCCESS: 'SUCCESS',         // 성공
-    FAILED: 'FAILED',           // 실패
-    PENDING: 'PENDING',         // 대기 중
-    PROCESSING: 'PROCESSING',   // 처리 중
-    CANCELLED: 'CANCELLED',     // 취소됨
+    SUCCESS: "success",         // 성공
+    FAILED: "failed",           // 실패
+    PENDING: "pending",         // 대기 중
+    PROCESSING: "processing",   // 처리 중
+    CANCELLED: "cancelled",     // 취소됨
   },
   CODES: {
     OK: 200,                    // 성공
@@ -35,4 +43,5 @@ const HTTP = {
 module.exports = {
   USER,
   HTTP,
+  PROVIDER,
 }

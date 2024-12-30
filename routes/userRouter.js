@@ -1,22 +1,21 @@
 const express = require('express')
 const { OK, BAD_REQUEST, UNAUTHORIZED, FORBIDDEN, NOT_FOUND, INTERNAL_SERVER_ERROR, UNEXPECTED_ERROR } = require('./resReturn')
 const router = express.Router()
+const { USER, PROVIDER } = require('../config/constants')
 const db = require('../models/index')
-const bcrypt =require("bcrypt")
+const bcrypt = require("bcrypt")
 const axios = require('axios')
 
 const hashingPW = async password => {
-  const saltRounds = 10
-
-  // salt 생성
-  const salt = await bcrypt.genSalt(saltRounds)
-
-  // hash
-  const hashedPw = await bcrypt.hash(password, salt)
-
-  return {
-    status: 201,
-    data: { salt, hashedPw },
+  try {
+    const saltRounds = 10
+    // salt 생성
+    const salt = await bcrypt.genSalt(saltRounds)
+    // hash
+    const hashedPw = await bcrypt.hash(password, salt)
+    return hashedPw
+  } catch (error) {
+    console.error(`* <Bcrypt Error: hashingPW() >: ${error}`)
   }
 }
 
@@ -25,7 +24,6 @@ router.get('/test', async (req, res) => {
     await db.User.create({
       email: "test@email.com",
       name: "test",
-      status: "ACTIVE"
     })
     const data = await db.User.findAll()
     console.log(data)
@@ -36,20 +34,42 @@ router.get('/test', async (req, res) => {
   }
 })
 
+router.post('/checkId', async (req, res) => {
+  try {
+    const data = req.body
+    const userJoinResult = await db.User.findOne({where: {userId: data.userId}})
+    if (userJoinResult === null) {
+      OK(res, '사용가능한 ID 입니다', data)
+    } else {
+      OK(res, '사용불가능한 ID 입니다', data, false)
+    }
+  } catch (error) {
+    console.error(`* <Router Error: ${req.path}>: ${error}`)
+    BAD_REQUEST(res)
+  }
+})
+
+
 router.post('/join', async (req, res) => {
   try {
     const data = req.body
-    try {
-      const userJoinResult = await db.User.findOne({where: {userId: data.id}})
-      console.log(userJoinResult)
-      if (userJoinResult === null) {
-        console.log(11)
-      }
-    } catch (error) {
-      console.log(`* <Router Error: ${req.path}>: ${error}`)
-      OK(res, "null")
+    const userJoinResult = await db.User.findOne({where: {userId: data.userId}})
+    if (userJoinResult === null) {
+      // if (false) {
+      //   // sns 아이디로 로그인한 흔적이 있으면?
+      // }
+      // 새롭게 아이디를 만들어줘야한다
+      await db.User.create({
+        userId: data.userId,
+        userPw: await hashingPW(data.userPw),
+        email: data.email || null,
+        name: data.name || null ,
+        status: USER.STATUS.ACTIVE
+      })
+      OK(res, '회원가입이 완료되었습니다')
+    } else {
+      OK(res, '사용불가능한 ID 입니다', null, false)
     }
-    
   } catch (error) {
     console.error(`* <Router Error: ${req.path}>: ${error}`)
     BAD_REQUEST(res)
@@ -59,10 +79,15 @@ router.post('/join', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const data = req.body
-    console.log(data)
-    const userInfo = await db.User.find({userId: data.userID, userPw: data.userPW})
-    console.log(userInfo)
-    // const resultPW = await bcrypt.compare(password, hashedPw)
+    const userInfo = await db.User.findOne({where: {userId: data.userId, userPw: await hashingPW(data.userPw)}})
+    if (userInfo !== null) {
+      // 회원정보 있음
+      OK(res, '로그인 성공')
+    } else {
+      // 회원정보 없음
+      OK(res, '로그인 실패', null, false)
+    }
+    // 세션 만들어 주기
   } catch (error) {
     console.error(`* <Router Error: ${req.path}>: ${error}`)
     BAD_REQUEST(res)

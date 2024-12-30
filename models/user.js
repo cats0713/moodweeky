@@ -9,16 +9,16 @@ module.exports = (sequelize, DataTypes) => {
         {
           userId: {
             type: DataTypes.STRING(40),
-            allowNull: true,
+            allowNull: false,
             unique: true,
           },
           userPw: {
             type: DataTypes.STRING(100),
-            allowNull: true,
+            allowNull: false,
           },
           name: {
             type: DataTypes.STRING(40),
-            allowNull: false,
+            allowNull: true,
           },
           provider: {
             type: DataTypes.STRING(10),

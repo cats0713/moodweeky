@@ -1,9 +1,9 @@
 const { USER, HTTP } = require('../config/constants');
 
-const OK = (res, message = 'Ok', data) => {
+const OK = (res, message = "Ok", data, result = true) => {
   // 200
   res.status(HTTP.CODES.OK).json({
-    result: true,
+    result: result,
     data: data ? data : null,
     msg: message,
   })
