@@ -1,7 +1,8 @@
 const express = require('express')
 const router = express.Router()
 const { NOT_FOUND } = require('./resReturn')
-
+const env = process.env.NODE_ENV || 'development'
+const config = require('../config/config.json')[env]
 // body-parser
 router.use(express.json()); 
 router.use(express.urlencoded( {extended : false } ));
@@ -11,7 +12,7 @@ router.use(async (req, res, next) => {
     const routesName = req.path.split('/')[1] === "main" ? '' : req.path.split('/')[1]
     const apiRoutes = require(`./${routesName}Router.js`)
     // if (req.path === "/user/login" || req.path === "/user/join") {
-    if (req.path === config[routesName]) {
+    if (config.exceptionRouter[req.path]) {
       // 세션 제외
       router.use(`/${routesName}`, apiRoutes)
       next()
