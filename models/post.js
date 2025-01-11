@@ -19,15 +19,18 @@ module.exports = (sequelize, DataTypes) => {
           content: {
               type: DataTypes.STRING(500),
           },
+          emotion: {
+            type: DataTypes.STRING(20),
+            allowNull: true
+          },
           snsId: {
             //? sns으로 로그인할경우 sns아이디 저장 필드
             type: DataTypes.STRING(30),
             allowNull: true, // null 허용
-            unique: true, // 중복 비허용
           },
           status: { // USER_STATUS 사용
             type: DataTypes.STRING(30),
-            allowNull: false,
+            defaultValue: "Using"
           }
         },
         {
