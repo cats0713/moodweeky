@@ -10,7 +10,6 @@ const PROVIDER = {
   }
 }
 
-
 const USER = {
   STATUS: {
     ACTIVE: "active",           // 활동 중

@@ -79,9 +79,11 @@ router.post('/join', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const data = req.body
-    const userInfo = await db.User.findOne({where: {userId: data.userId, userPw: await hashingPW(data.userPw)}})
-    if (userInfo !== null) {
-      // 회원정보 있음
+    const userInfo = await db.User.findOne({where: {userId: data.userId}})
+    const userIsMatch = await bcrypt.compare(data.userPw, userInfo.userPw)
+    if (userIsMatch) {
+      // 회원정보 있음, 세션만들어 주기
+      req.session.user = { id: userInfo.userId, username: userInfo.name }
       OK(res, '로그인 성공')
     } else {
       // 회원정보 없음
@@ -97,6 +99,21 @@ router.post('/login', async (req, res) => {
 
 
 router.post('/logout', async (req, res) => {
+  console.log(req)
+  console.log(req.session)
+  try {
+    req.session.destroy((err) => {
+      if (err) {
+        console.error(`* <Logout Error: ${req.path}>: ${error}`)
+        OK(res, '로그아웃 실패', null, false)
+      } else {
+        OK(res, '로그인 성공')
+      }
+    })
+  } catch (error) {
+    console.error(`* <Router Error: ${req.path}>: ${error}`)
+    BAD_REQUEST(res)
+  }
 })
 
 
